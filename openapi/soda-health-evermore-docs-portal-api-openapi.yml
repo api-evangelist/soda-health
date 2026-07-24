@@ -1,0 +1,75 @@
+openapi: 3.1.0
+info:
+  title: Evermore Portal docs Evermore Docs Portal API
+  description: Customer-facing docs portal with magic link and OIDC auth
+  version: 0.1.0
+tags:
+- name: Evermore Docs Portal
+paths:
+  /{full_path}:
+    get:
+      summary: Spa Catch All
+      description: Serve static files or index.html for client-side routes.
+      operationId: spa_catch_all__full_path__get
+      parameters:
+      - name: full_path
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Full Path
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      tags:
+      - Evermore Docs Portal
+components:
+  schemas:
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+  securitySchemes:
+    HTTPBearer:
+      type: http
+      scheme: bearer

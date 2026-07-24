@@ -1,0 +1,52 @@
+openapi: 3.1.0
+info:
+  title: Evermore Portal docs health API
+  description: Customer-facing docs portal with magic link and OIDC auth
+  version: 0.1.0
+tags:
+- name: health
+paths:
+  /healthz:
+    get:
+      tags:
+      - health
+      summary: Healthz
+      description: Liveness probe — returns 200 if the process is alive.
+      operationId: healthz_healthz_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /readyz:
+    get:
+      tags:
+      - health
+      summary: Readyz
+      description: Readiness probe — returns 200 if the app is ready to serve traffic.
+      operationId: readyz_readyz_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /health:
+    get:
+      tags:
+      - health
+      summary: Health
+      description: Backward-compat alias for /healthz.
+      operationId: health_health_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+components:
+  securitySchemes:
+    HTTPBearer:
+      type: http
+      scheme: bearer

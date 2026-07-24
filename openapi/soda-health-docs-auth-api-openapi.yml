@@ -1,0 +1,51 @@
+openapi: 3.1.0
+info:
+  title: Evermore Portal docs docs-auth API
+  description: Customer-facing docs portal with magic link and OIDC auth
+  version: 0.1.0
+tags:
+- name: docs-auth
+paths:
+  /docs/auth/login:
+    get:
+      tags:
+      - docs-auth
+      summary: Docs Oidc Login
+      description: 'Redirect internal users to the Entra OIDC authorize endpoint.
+
+
+        Generates a signed state token to prevent CSRF, then redirects to Entra''s
+
+        authorize endpoint with the appropriate scopes and redirect URI.'
+      operationId: docs_oidc_login_docs_auth_login_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /docs/auth/callback:
+    get:
+      tags:
+      - docs-auth
+      summary: Docs Oidc Callback
+      description: 'Handle the Entra OIDC callback after user authenticates.
+
+
+        Validates the state parameter, exchanges the authorization code for tokens,
+
+        validates the ID token via JWKS, extracts user claims, and issues a session
+
+        JWT. Redirects the user to the frontend with the session JWT.'
+      operationId: docs_oidc_callback_docs_auth_callback_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+components:
+  securitySchemes:
+    HTTPBearer:
+      type: http
+      scheme: bearer

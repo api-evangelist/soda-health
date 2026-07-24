@@ -1,0 +1,666 @@
+openapi: 3.1.0
+info:
+  title: Evermore Portal docs API
+  description: Customer-facing docs portal with magic link and OIDC auth
+  version: 0.1.0
+tags:
+- name: docs
+paths:
+  /api/docs/login:
+    post:
+      tags:
+      - docs
+      summary: Docs Login
+      description: 'Retired endpoint — domain-based login is no longer supported.
+
+
+        The docs portal previously authenticated external users by email domain
+
+        lookup. That flow was retired in favour of IM-issued magic links that
+
+        carry explicit scope in the token (see ADR-45cb51db). Requests to this
+
+        endpoint return HTTP 410 Gone.'
+      operationId: docs_login_api_docs_login_post
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /api/docs/magic-link:
+    post:
+      tags:
+      - docs
+      summary: Docs Magic Link
+      description: 'Generate a magic link for a customer. Internal users only (ADR-71391314).
+
+
+        Bearer-only auth (``get_docs_user_no_cookie``): this is the one state-changing
+
+        endpoint, and ``SameSite=None`` (ADR-50c7cd93 Amendment 2026-06-24) makes the
+
+        session cookie cross-site-sendable. Requiring the Bearer header — which only
+
+        the SPA''s ``fetch()`` can set — closes the CSRF surface (security review H1).
+
+
+        Requires ``docs.admin`` role (carried in the session JWT from OIDC).
+
+        The caller supplies customer_name and scope explicitly. ``email`` and
+
+        ``client_types`` have been removed from the token schema.'
+      operationId: docs_magic_link_api_docs_magic_link_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MagicLinkRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MagicLinkResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /api/docs/verify:
+    post:
+      tags:
+      - docs
+      summary: Docs Verify
+      description: 'Verify a magic link token and return a session JWT (ADR-71391314).
+
+
+        Scope (customer_name, scope, folder_id, page_id) is read from the token
+
+        payload only — no domain lookup. Tokens containing ``client_types`` are
+
+        pre-ADR-71391314 and rejected as revoked; the IM must generate a new link.
+
+        Rate-limited per token to prevent brute-force attempts.
+
+
+        Internal session preservation: if the caller already presents a valid
+
+        internal session JWT in ``Authorization: Bearer``, no new external session
+
+        is minted. The endpoint returns the magic-link payload''s destination so the
+
+        frontend can navigate, but with ``preserve_internal_session=true`` and an
+
+        empty ``token`` field. This prevents IMs from accidentally clobbering their
+
+        full-access internal session by clicking their own customer-scoped magic
+
+        links — see Diane''s bug report 2026-05-01.'
+      operationId: docs_verify_api_docs_verify_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VerifyRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VerifyResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+  /api/docs/folders:
+    get:
+      tags:
+      - docs
+      summary: Docs Folders
+      description: 'Return the live Confluence folder list. Internal Entra users only.
+
+
+        Derived from label enumeration across all explainer pages. Returns the
+
+        current set of labels and their doc counts. Response cached for 5 minutes
+
+        on the Confluence client side (see docs_confluence.py).
+
+
+        External magic-link sessions receive 401 — IMs use this endpoint to
+
+        drive the "Share folder" picker; customers never call it directly.'
+      operationId: docs_folders_api_docs_folders_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FoldersResponse'
+      security:
+      - HTTPBearer: []
+  /api/docs/inventory:
+    get:
+      tags:
+      - docs
+      summary: Docs Inventory
+      description: 'Return the document inventory filtered by the user''s magic-link scope.
+
+
+        Internal users and scope=all magic-link users see all pages. scope=folder
+
+        users see only pages whose labels include their folder_id. scope=page
+
+        users see only the single scoped page.'
+      operationId: docs_inventory_api_docs_inventory_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InventoryResponse'
+      security:
+      - HTTPBearer: []
+  /api/docs/pages/{page_id}:
+    get:
+      tags:
+      - docs
+      summary: Docs Page
+      description: 'Return a single document page with content.
+
+
+        Internal users can access any page. Magic-link users are restricted by
+
+        scope: scope=folder users may only access pages in their folder;
+
+        scope=page users may only access their specific page. Out-of-scope
+
+        access returns 403.'
+      operationId: docs_page_api_docs_pages__page_id__get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: page_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Page Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PageResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/docs/images/{page_id}/{filename}:
+    get:
+      tags:
+      - docs
+      summary: Docs Image
+      description: 'Return an image attachment for a docs page.
+
+
+        Auth: JWT-based (OIDC-issued for internal, magic-link-issued for external).
+
+        Scope enforcement mirrors docs_page — images for out-of-scope pages
+
+        return 403.
+
+        Returns the image binary with correct Content-Type and Cache-Control headers.'
+      operationId: docs_image_api_docs_images__page_id___filename__get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: page_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Page Id
+      - name: filename
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Filename
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/docs/search:
+    get:
+      tags:
+      - docs
+      summary: Docs Search
+      description: 'Search documents by keyword (title + body) and/or tag filter.
+
+
+        Both params are optional and composable:
+
+        - q only → full-text search via Confluence CQL
+
+        - tags only → filter by label (comma-separated)
+
+        - both → full-text within filtered labels
+
+
+        Results are further filtered by the user''s magic-link scope.'
+      operationId: docs_search_api_docs_search_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: q
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Q
+      - name: tags
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Tags
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InventoryResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/docs/external-proxy/_status:
+    get:
+      tags:
+      - docs
+      summary: Docs External Proxy Status
+      description: 'Internal-only drift surface for the docs portal''s external-link panel.
+
+
+        Returns the SPN-reachability state of every `sodahealth.sharepoint.com`
+
+        URL referenced on the page. Cached per-page-id for ~7 minutes server-side
+
+        so a frontend that opens/closes the panel repeatedly doesn''t pound Graph.
+
+
+        Auth: Entra OIDC ONLY. Magic-link customers get 403 unconditionally — the
+
+        set of file URLs on a page is internal-only information.'
+      operationId: docs_external_proxy_status_api_docs_external_proxy__status_get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: page_id
+        in: query
+        required: true
+        schema:
+          type: string
+          title: Page Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExternalProxyStatusResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/docs/external-proxy/{token}:
+    get:
+      tags:
+      - docs
+      summary: Docs External Proxy
+      description: 'Customer-facing file proxy. See module docstring for the full envelope.
+
+
+        The token in the URL path is server-minted at page-render time by
+
+        `_rewrite_external_sp_links` (WI-4). It binds `(page_id, url)` so a
+
+        customer can only fetch URLs that appeared in pages they are entitled
+
+        to see.'
+      operationId: docs_external_proxy_api_docs_external_proxy__token__get
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: token
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Token
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+components:
+  schemas:
+    ExternalProxyStatusItem:
+      properties:
+        url:
+          type: string
+          title: Url
+        resolves:
+          type: boolean
+          title: Resolves
+        error:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Error
+      type: object
+      required:
+      - url
+      - resolves
+      title: ExternalProxyStatusItem
+    FolderItem:
+      properties:
+        folder_id:
+          type: string
+          title: Folder Id
+        label:
+          type: string
+          title: Label
+        doc_count:
+          type: integer
+          title: Doc Count
+      type: object
+      required:
+      - folder_id
+      - label
+      - doc_count
+      title: FolderItem
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    VerifyResponse:
+      properties:
+        token:
+          type: string
+          title: Token
+          default: ''
+        customer_name:
+          type: string
+          title: Customer Name
+          default: ''
+        scope:
+          type: string
+          title: Scope
+          default: all
+        folder_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Folder Id
+        page_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Page Id
+        preserve_internal_session:
+          type: boolean
+          title: Preserve Internal Session
+          description: True when the caller already has a valid internal session JWT and the magic link is being used for navigation only. Frontend should skip writing localStorage and keep the existing internal session.
+          default: false
+      type: object
+      title: VerifyResponse
+    InventoryResponse:
+      properties:
+        pages:
+          items:
+            $ref: '#/components/schemas/InventoryPage'
+          type: array
+          title: Pages
+      type: object
+      required:
+      - pages
+      title: InventoryResponse
+    PageResponse:
+      properties:
+        id:
+          type: string
+          title: Id
+        title:
+          type: string
+          title: Title
+        labels:
+          items:
+            type: string
+          type: array
+          title: Labels
+        content:
+          type: string
+          title: Content
+        last_updated:
+          type: string
+          title: Last Updated
+          default: ''
+      type: object
+      required:
+      - id
+      - title
+      - labels
+      - content
+      title: PageResponse
+    ExternalProxyStatusResponse:
+      properties:
+        page_id:
+          type: string
+          title: Page Id
+        items:
+          items:
+            $ref: '#/components/schemas/ExternalProxyStatusItem'
+          type: array
+          title: Items
+        cached:
+          type: boolean
+          title: Cached
+          default: false
+      type: object
+      required:
+      - page_id
+      - items
+      title: ExternalProxyStatusResponse
+    FoldersResponse:
+      properties:
+        folders:
+          items:
+            $ref: '#/components/schemas/FolderItem'
+          type: array
+          title: Folders
+      type: object
+      required:
+      - folders
+      title: FoldersResponse
+    MagicLinkRequest:
+      properties:
+        customer_name:
+          type: string
+          title: Customer Name
+          description: Customer display name to embed in the token
+        scope:
+          type: string
+          title: Scope
+          description: 'Access scope: ''all'', ''folder'', or ''page'''
+          default: all
+        folder_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Folder Id
+          description: Confluence label for folder scope. Required when scope='folder'.
+        page_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Page Id
+          description: Confluence page ID for page scope. Required when scope='page'.
+        expires_in_minutes:
+          type: integer
+          title: Expires In Minutes
+          description: 'Link expiry in minutes. Presets: 43200 (30d), 129600 (90d), 5256000 (10y — effectively never). Custom values accepted between 1 min and 5256000 min (10 years); out-of-range values clamp to the 30-day default.'
+          default: 43200
+      type: object
+      required:
+      - customer_name
+      title: MagicLinkRequest
+      description: 'Request body for IM-issued magic link generation (ADR-71391314).
+
+
+        Scope is carried explicitly on the token. ``email`` and ``client_types``
+
+        have been removed. ``scope`` must be one of: all, folder, page.
+
+        ``folder_id`` is required when scope=folder; ``page_id`` when scope=page.'
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    VerifyRequest:
+      properties:
+        token:
+          type: string
+          title: Token
+          description: Magic link token to verify
+      type: object
+      required:
+      - token
+      title: VerifyRequest
+    InventoryPage:
+      properties:
+        id:
+          type: string
+          title: Id
+        title:
+          type: string
+          title: Title
+        labels:
+          items:
+            type: string
+          type: array
+          title: Labels
+        last_updated:
+          type: string
+          title: Last Updated
+          default: ''
+      type: object
+      required:
+      - id
+      - title
+      - labels
+      title: InventoryPage
+    MagicLinkResponse:
+      properties:
+        magic_link_url:
+          type: string
+          title: Magic Link Url
+        customer_name:
+          type: string
+          title: Customer Name
+        scope:
+          type: string
+          title: Scope
+        folder_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Folder Id
+        page_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Page Id
+        expires_in_minutes:
+          type: integer
+          title: Expires In Minutes
+          default: 43200
+      type: object
+      required:
+      - magic_link_url
+      - customer_name
+      - scope
+      title: MagicLinkResponse
+  securitySchemes:
+    HTTPBearer:
+      type: http
+      scheme: bearer
