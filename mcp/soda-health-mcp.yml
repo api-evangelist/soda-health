@@ -1,0 +1,31 @@
+generated: '2026-07-21'
+method: derived
+status: candidate
+source: openapi/soda-health-docs-portal-openapi-original.json
+notes: >-
+  No official hosted/remote MCP server was found for Soda Health / Evermore. This
+  is a DERIVED candidate tool list mapped one-to-one from the read operations of
+  the Evermore Docs Portal OpenAPI. Requires an HTTP Bearer token (magic-link or
+  OIDC) at call time.
+server:
+  name: soda-health-docs
+  transport: http
+tools:
+- name: list_folders
+  description: List documentation folders available to the token's scope.
+  source_operation: openapi/soda-health-docs-portal-openapi-original.json#docs_folders_api_docs_folders_get
+- name: list_inventory
+  description: List the full documentation page inventory.
+  source_operation: openapi/soda-health-docs-portal-openapi-original.json#docs_inventory_api_docs_inventory_get
+- name: get_page
+  description: Fetch a single documentation page by Confluence page ID.
+  source_operation: openapi/soda-health-docs-portal-openapi-original.json#docs_page_api_docs_pages__page_id__get
+- name: search_docs
+  description: Search the documentation corpus.
+  source_operation: openapi/soda-health-docs-portal-openapi-original.json#docs_search_api_docs_search_get
+- name: issue_magic_link
+  description: Issue a scoped magic-link access token (Implementation Manager use).
+  source_operation: openapi/soda-health-docs-portal-openapi-original.json#docs_magic_link_api_docs_magic_link_post
+- name: verify_magic_link
+  description: Verify a magic-link token and exchange it for a session.
+  source_operation: openapi/soda-health-docs-portal-openapi-original.json#docs_verify_api_docs_verify_post

@@ -1,0 +1,30 @@
+generated: '2026-07-21'
+method: derived
+source: openapi/soda-health-docs-portal-openapi-original.json
+standards:
+- id: openapi-3.1
+  conforms: true
+  evidence: Document declares openapi 3.1.0.
+- id: oidc
+  conforms: true
+  evidence: >-
+    OIDC login and callback endpoints present (/docs/auth/login, /docs/auth/callback);
+    info description states "magic link and OIDC auth".
+- id: http-bearer
+  conforms: true
+  evidence: securitySchemes HTTPBearer (type http, scheme bearer) applied to /api/docs/* operations.
+- id: oauth2
+  conforms: false
+  evidence: No oauth2 securityScheme with declared flows/scopes in the spec.
+- id: rfc9457-problem-details
+  conforms: false
+  evidence: Errors use the FastAPI default JSON envelope ({detail}), not application/problem+json.
+- id: fhir-r4
+  conforms: false
+  evidence: No FHIR resource shapes; this is a documentation-portal API, not a clinical data API.
+- id: pagination
+  conforms: false
+  evidence: No cursor/offset pagination parameters declared.
+- id: idempotency
+  conforms: false
+  evidence: No Idempotency-Key header/param documented.

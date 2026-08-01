@@ -1,0 +1,20 @@
+overlay: 1.0.0
+info:
+  title: API Evangelist enhancements for Soda Health / Evermore Docs Portal API
+  version: 1.0.0
+extends: openapi/soda-health-docs-portal-openapi-original.json
+actions:
+- target: $.info
+  update:
+    x-apievangelist-provider: soda-health
+    x-apievangelist-also-known-as: Evermore Outcomes
+    x-apievangelist-category: healthcare-benefits-documentation-portal
+    x-apievangelist-auth: http-bearer (magic-link + OIDC)
+    x-apievangelist-content-source: Confluence
+- target: $.servers
+  update:
+  - url: https://docs.evermoreoutcomes.com
+    description: Evermore Docs Portal (production)
+- target: "$.paths['/api/docs/search'].get"
+  update:
+    x-apievangelist-note: Primary agent-facing read operation for retrieving documentation.

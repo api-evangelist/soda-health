@@ -1,0 +1,20 @@
+{
+  "provider": "soda-health",
+  "sources": [
+    "soda-health-docs-api-openapi.yml",
+    "soda-health-docs-auth-api-openapi.yml",
+    "soda-health-evermore-docs-portal-api-openapi.yml",
+    "soda-health-health-api-openapi.yml"
+  ],
+  "outputs": [
+    "soda-health-docs-api-openapi.yml",
+    "soda-health-docs-auth-api-openapi.yml",
+    "soda-health-evermore-docs-portal-api-openapi.yml",
+    "soda-health-health-api-openapi.yml"
+  ],
+  "archived": [],
+  "errors": [],
+  "warnings": [],
+  "notes": [],
+  "skipped": []
+}

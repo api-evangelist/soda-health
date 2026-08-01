@@ -1,0 +1,20 @@
+generated: '2026-07-21'
+method: derived
+source: openapi/soda-health-docs-portal-openapi-original.json
+service: Evermore Docs Portal API
+versioning:
+  scheme: none-in-path
+  api_version: '0.1.0'
+  notes: Version carried only in the OpenAPI info block; no version prefix in paths.
+deprecation:
+  policy_url: null
+  sunset_header: unknown
+  notes: No public deprecation policy or RFC 8594 Sunset/Deprecation header support found.
+sla:
+  url: null
+status_page: null
+health_endpoints:
+  liveness: /healthz
+  readiness: /readyz
+  status: /health
+deprecated_operations: []

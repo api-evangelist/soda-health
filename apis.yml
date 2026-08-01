@@ -1,23 +1,136 @@
 aid: soda-health
 name: Soda Health
-description: Soda Health is a company surfaced as a portfolio company of lightspeed-venture-partners and
-  added to the API Evangelist network as a stub for enrichment. This profile is a lead awaiting the enrichment
-  pipeline.
+description: >-
+  Soda Health is a healthcare benefits technology company that builds a benefits
+  administration and "health wallet" platform for health plans, powering
+  supplemental benefits for Medicare Advantage and Medicaid members such as
+  over-the-counter (OTC), healthy food and grocery, and other flex/spending-card
+  benefits. The company now operates as Evermore Outcomes — sodahealth.com
+  redirects to evermoreoutcomes.com and the product documentation is branded
+  "Evermore Product Documentation," while account and program references still
+  carry the Soda Health name. The public developer surface found is the Evermore
+  Docs Portal API (docs.evermoreoutcomes.com): a Confluence-backed, customer-facing
+  documentation portal secured with magic-link tokens and OIDC single sign-on,
+  scoped per customer program. The core benefits/wallet product APIs are gated
+  behind that portal and are not publicly published. Soda Health was surfaced as a
+  portfolio company of Lightspeed Venture Partners.
 url: https://raw.githubusercontent.com/api-evangelist/soda-health/refs/heads/main/apis.yml
 x-type: company
 x-source: vc-portfolio
 x-backed-by:
 - lightspeed-venture-partners
-x-tier: stub
-x-tier-reason: portfolio-lead
-specificationVersion: '0.20'
-created: '2026-07-17'
-modified: '2026-07-17'
+accessModel:
+  pricing: unknown
+  onboarding: self-serve
+  trial: false
+  try_now: false
+  public: false
+  label: Self-serve signup
+  confidence: medium
+  source:
+  - authentication
+  generated: '2026-07-22'
+  method: derived
+image: https://docs.evermoreoutcomes.com/favicon-192.png
 tags:
 - Company
-apis: []
+- Healthcare
+- Health Benefits
+- Medicare Advantage
+- Medicaid
+- Supplemental Benefits
+- Benefits Administration
+- Documentation Portal
+specificationVersion: '0.20'
+created: '2026-07-17'
+modified: '2026-07-21'
+apis:
+- aid: soda-health:soda-health-docs-api
+  name: Soda Health docs API
+  description: The docs API from Soda Health — 10 operation(s) for docs.
+  humanURL: https://docs.evermoreoutcomes.com/
+  baseURL: https://docs.evermoreoutcomes.com
+  tags:
+  - docs
+  properties:
+  - type: OpenAPI
+    url: openapi/soda-health-docs-api-openapi.yml
+  - type: Authentication
+    url: authentication/soda-health-authentication.yml
+- aid: soda-health:soda-health-docs-auth-api
+  name: Soda Health docs-auth API
+  description: The docs-auth API from Soda Health — 2 operation(s) for docs-auth.
+  humanURL: https://docs.evermoreoutcomes.com/
+  baseURL: https://docs.evermoreoutcomes.com
+  tags:
+  - docs-auth
+  properties:
+  - type: OpenAPI
+    url: openapi/soda-health-docs-auth-api-openapi.yml
+  - type: Authentication
+    url: authentication/soda-health-authentication.yml
+- aid: soda-health:soda-health-evermore-docs-portal-api
+  name: Soda Health Evermore Docs Portal API
+  description: The Evermore Docs Portal API from Soda Health — 1 operation(s) for evermore docs portal.
+  humanURL: https://docs.evermoreoutcomes.com/
+  baseURL: https://docs.evermoreoutcomes.com
+  tags:
+  - Evermore Docs Portal
+  properties:
+  - type: OpenAPI
+    url: openapi/soda-health-evermore-docs-portal-api-openapi.yml
+  - type: Authentication
+    url: authentication/soda-health-authentication.yml
+- aid: soda-health:soda-health-health-api
+  name: Soda Health health API
+  description: The health API from Soda Health — 3 operation(s) for health.
+  humanURL: https://docs.evermoreoutcomes.com/
+  baseURL: https://docs.evermoreoutcomes.com
+  tags:
+  - health
+  properties:
+  - type: OpenAPI
+    url: openapi/soda-health-health-api-openapi.yml
+  - type: Authentication
+    url: authentication/soda-health-authentication.yml
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
 - FN: APIs.json
   email: info@apis.io
+common:
+- type: DeveloperPortal
+  url: https://docs.evermoreoutcomes.com/
+- type: Documentation
+  url: https://docs.evermoreoutcomes.com/
+- type: APIReference
+  url: https://docs.evermoreoutcomes.com/api/openapi.json
+- type: Authentication
+  url: authentication/soda-health-authentication.yml
+- type: DomainSecurity
+  url: security/soda-health-domain-security.yml
+- type: ErrorCatalog
+  url: errors/soda-health-problem-types.yml
+- type: Conventions
+  url: conventions/soda-health-conventions.yml
+- type: DataModel
+  url: data-model/soda-health-data-model.yml
+- type: MCPServer
+  url: mcp/soda-health-mcp.yml
+- type: Conformance
+  url: conformance/soda-health-conformance.yml
+- type: Lifecycle
+  url: lifecycle/soda-health-lifecycle.yml
+- type: Overlay
+  url: overlays/soda-health-docs-portal-overlay.yaml
+- type: LLMsTxt
+  url: llms/soda-health-llms.txt
+- type: AgentSkill
+  url: skills/soda-health-browse-docs.md
+- type: AgentSkill
+  url: skills/soda-health-issue-magic-link.md
+x-enrichment:
+  date: '2026-07-21'
+  status: enriched
+  artifacts_added: 15
+  pass: local-v1

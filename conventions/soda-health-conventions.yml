@@ -1,0 +1,44 @@
+generated: '2026-07-21'
+method: derived
+source: openapi/soda-health-docs-portal-openapi-original.json
+service: Evermore Docs Portal API
+authentication:
+  style: http-bearer
+  scheme: HTTPBearer
+  detail: >-
+    All /api/docs/* operations require `Authorization: Bearer <token>`. Tokens are
+    issued either as scoped magic-link tokens (POST /api/docs/magic-link, IM-issued)
+    or via OIDC single sign-on (/docs/auth/login -> /docs/auth/callback). The token
+    carries an access scope of `all`, `folder`, or `page`.
+  cross_ref: authentication/soda-health-authentication.yml
+idempotency:
+  supported: false
+  notes: >-
+    No Idempotency-Key header or idempotency parameter is documented in the spec.
+    Read operations (GET) are naturally idempotent; the two POST issuance/verify
+    endpoints are not idempotency-keyed.
+pagination:
+  supported: unknown
+  notes: >-
+    No pagination parameters (cursor/offset/limit) are declared on the folders,
+    inventory, or search operations in the spec.
+error_envelope:
+  content_type: application/json
+  shape: '{ "detail": <string | array> }'
+  cross_ref: errors/soda-health-problem-types.yml
+media_types:
+  request: application/json
+  response: application/json
+versioning:
+  scheme: none-in-path
+  api_version: '0.1.0'
+  cross_ref: lifecycle/soda-health-lifecycle.yml
+health_checks:
+  liveness: /healthz
+  readiness: /readyz
+  status: /health
+backing_system:
+  content_source: Confluence
+  notes: >-
+    Documentation folders map to Confluence labels (folder_id) and pages to
+    Confluence page IDs (page_id).

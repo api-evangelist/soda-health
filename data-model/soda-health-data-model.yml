@@ -1,0 +1,66 @@
+generated: '2026-07-21'
+method: derived
+source: openapi/soda-health-docs-portal-openapi-original.json
+service: Evermore Docs Portal API
+entities:
+- name: Folder
+  schema: FolderItem
+  identifier: folder_id
+  identifier_note: Confluence label used for folder-scoped access.
+  surfaced_by:
+  - docs_folders_api_docs_folders_get
+- name: Page
+  schema: PageResponse
+  identifier: page_id
+  identifier_note: Confluence page ID.
+  surfaced_by:
+  - docs_page_api_docs_pages__page_id__get
+  - docs_inventory_api_docs_inventory_get
+- name: InventoryPage
+  schema: InventoryPage
+  parent: InventoryResponse
+  surfaced_by:
+  - docs_inventory_api_docs_inventory_get
+- name: Image
+  identifier: filename
+  belongs_to: Page
+  surfaced_by:
+  - docs_image_api_docs_images__page_id___filename__get
+- name: MagicLink
+  schemas:
+  - MagicLinkRequest
+  - MagicLinkResponse
+  surfaced_by:
+  - docs_magic_link_api_docs_magic_link_post
+  - docs_verify_api_docs_verify_post
+- name: ExternalProxy
+  schemas:
+  - ExternalProxyStatusItem
+  - ExternalProxyStatusResponse
+  surfaced_by:
+  - docs_external_proxy_status_api_docs_external_proxy__status_get
+  - docs_external_proxy_api_docs_external_proxy__token__get
+relationships:
+- from: Folder
+  to: Page
+  kind: has_many
+  via: folder_id
+  note: A folder (Confluence label) groups many pages.
+- from: Page
+  to: Folder
+  kind: belongs_to
+  via: folder_id
+- from: Image
+  to: Page
+  kind: belongs_to
+  via: page_id
+- from: MagicLink
+  to: Folder
+  kind: has_one
+  via: folder_id
+  note: When scope=folder, the token is bound to one folder.
+- from: MagicLink
+  to: Page
+  kind: has_one
+  via: page_id
+  note: When scope=page, the token is bound to one page.

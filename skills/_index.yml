@@ -1,0 +1,20 @@
+generated: '2026-07-21'
+method: generated
+source: openapi/soda-health-docs-portal-openapi-original.json
+skills:
+- file: soda-health-browse-docs.md
+  name: Browse Soda Health / Evermore product documentation
+  api: openapi/soda-health-docs-portal-openapi-original.json
+  operations:
+  - docs_verify_api_docs_verify_post
+  - docs_folders_api_docs_folders_get
+  - docs_inventory_api_docs_inventory_get
+  - docs_page_api_docs_pages__page_id__get
+  - docs_search_api_docs_search_get
+- file: soda-health-issue-magic-link.md
+  name: Issue a scoped Evermore docs magic link
+  api: openapi/soda-health-docs-portal-openapi-original.json
+  operations:
+  - docs_login_api_docs_login_post
+  - docs_magic_link_api_docs_magic_link_post
+  - docs_verify_api_docs_verify_post

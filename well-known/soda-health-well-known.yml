@@ -1,0 +1,32 @@
+generated: '2026-07-21'
+method: probed
+host: https://docs.evermoreoutcomes.com
+notes: >-
+  Probed the /.well-known/ discovery surface on the live API host. Every path
+  returns HTTP 200 but the body is the SPA catch-all HTML shell (843 bytes,
+  identical <!doctype html> for all paths), i.e. the front-end fallback route —
+  NOT a genuine well-known document. Recorded as a negative result; no raw files
+  saved and no WellKnown/APICatalog pointer wired (nothing real to point at). The
+  marketing domain (evermoreoutcomes.com / sodahealth.com) is behind a CAPTCHA
+  challenge (HTTP 202 sgcaptcha) so its /.well-known/ surface could not be probed.
+documents:
+- path: /.well-known/security.txt
+  status: 200
+  real: false
+  reason: spa-catch-all
+- path: /.well-known/openid-configuration
+  status: 200
+  real: false
+  reason: spa-catch-all
+- path: /.well-known/oauth-authorization-server
+  status: 200
+  real: false
+  reason: spa-catch-all
+- path: /.well-known/api-catalog
+  status: 200
+  real: false
+  reason: spa-catch-all
+- path: /.well-known/ai-plugin.json
+  status: 200
+  real: false
+  reason: spa-catch-all

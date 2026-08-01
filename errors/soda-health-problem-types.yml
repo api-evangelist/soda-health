@@ -1,0 +1,36 @@
+generated: '2026-07-21'
+method: derived
+source: openapi/soda-health-docs-portal-openapi-original.json
+format: fastapi-default
+notes: >-
+  Derived from the Evermore Docs Portal OpenAPI. Errors use the FastAPI default
+  JSON envelope (not RFC 9457 problem+json). Validation failures return HTTP 422
+  with a `detail[]` array of {loc, msg, type}; authentication failures return
+  HTTP 401 with `{"detail": "..."}` (observed: "Authentication required").
+envelope:
+  content_type: application/json
+  validation_shape: '{ "detail": [ { "loc": [...], "msg": "...", "type": "..." } ] }'
+  error_shape: '{ "detail": "<message>" }'
+problems:
+- status: 401
+  title: Authentication required
+  detail_example: Authentication required
+  cause: Missing or invalid HTTP Bearer token (magic-link or OIDC session token).
+  remediation: >-
+    Obtain a scoped magic-link token from an Evermore Implementation Manager, or
+    authenticate via the OIDC login flow (/docs/auth/login), then send it as
+    `Authorization: Bearer <token>`.
+  observed_operation: docs_inventory_api_docs_inventory_get
+- status: 422
+  title: Validation Error
+  schema: HTTPValidationError
+  cause: Request path/query/body parameters failed schema validation.
+  remediation: Correct the offending fields listed in `detail[].loc` and retry.
+  applies_to_operations:
+  - docs_magic_link_api_docs_magic_link_post
+  - docs_verify_api_docs_verify_post
+  - docs_page_api_docs_pages__page_id__get
+  - docs_image_api_docs_images__page_id___filename__get
+  - docs_search_api_docs_search_get
+  - docs_external_proxy_status_api_docs_external_proxy__status_get
+  - docs_external_proxy_api_docs_external_proxy__token__get
