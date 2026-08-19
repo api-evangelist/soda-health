@@ -1,0 +1,217 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Evermore Portal docs API",
+    "version": "0.1.0"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "docs",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Docs Login",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/docs/login"
+          },
+          "docs": "Retired endpoint — domain-based login is no longer supported.\n\nThe docs portal previously authenticated external users by email domain\nlookup. That flow was retired in favour of IM-issued magic links that\ncarry explicit scope in the token (see ADR-45cb51db). Requests to this\nendpoint return HTTP 410 Gone."
+        },
+        {
+          "info": {
+            "name": "Docs Magic Link",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/docs/magic-link",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Generate a magic link for a customer. Internal users only (ADR-71391314).\n\nBearer-only auth (``get_docs_user_no_cookie``): this is the one state-changing\nendpoint, and ``SameSite=None`` (ADR-50c7cd93 Amendment 2026-06-24) makes the\nsession cookie cross-site-sendable. Requiring the Bearer header — which only\nthe SPA's ``fetch()`` can set — closes the CSRF surface (security review H1).\n\nRequires ``docs.admin`` role (carried in the session JWT from OIDC).\nThe caller supplies customer_name and scope"
+        },
+        {
+          "info": {
+            "name": "Docs Verify",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/docs/verify",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Verify a magic link token and return a session JWT (ADR-71391314).\n\nScope (customer_name, scope, folder_id, page_id) is read from the token\npayload only — no domain lookup. Tokens containing ``client_types`` are\npre-ADR-71391314 and rejected as revoked; the IM must generate a new link.\nRate-limited per token to prevent brute-force attempts.\n\nInternal session preservation: if the caller already presents a valid\ninternal session JWT in ``Authorization: Bearer``, no new external session\nis minted. "
+        },
+        {
+          "info": {
+            "name": "Docs Folders",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/docs/folders",
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Return the live Confluence folder list. Internal Entra users only.\n\nDerived from label enumeration across all explainer pages. Returns the\ncurrent set of labels and their doc counts. Response cached for 5 minutes\non the Confluence client side (see docs_confluence.py).\n\nExternal magic-link sessions receive 401 — IMs use this endpoint to\ndrive the \"Share folder\" picker; customers never call it directly."
+        },
+        {
+          "info": {
+            "name": "Docs Inventory",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/docs/inventory",
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Return the document inventory filtered by the user's magic-link scope.\n\nInternal users and scope=all magic-link users see all pages. scope=folder\nusers see only pages whose labels include their folder_id. scope=page\nusers see only the single scoped page."
+        },
+        {
+          "info": {
+            "name": "Docs Page",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/docs/pages/:page_id",
+            "params": [
+              {
+                "name": "page_id",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Return a single document page with content.\n\nInternal users can access any page. Magic-link users are restricted by\nscope: scope=folder users may only access pages in their folder;\nscope=page users may only access their specific page. Out-of-scope\naccess returns 403."
+        },
+        {
+          "info": {
+            "name": "Docs Image",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/docs/images/:page_id/:filename",
+            "params": [
+              {
+                "name": "page_id",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "filename",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Return an image attachment for a docs page.\n\nAuth: JWT-based (OIDC-issued for internal, magic-link-issued for external).\nScope enforcement mirrors docs_page — images for out-of-scope pages\nreturn 403.\nReturns the image binary with correct Content-Type and Cache-Control headers."
+        },
+        {
+          "info": {
+            "name": "Docs Search",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/docs/search",
+            "params": [
+              {
+                "name": "q",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "tags",
+                "value": "",
+                "type": "query"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Search documents by keyword (title + body) and/or tag filter.\n\nBoth params are optional and composable:\n- q only → full-text search via Confluence CQL\n- tags only → filter by label (comma-separated)\n- both → full-text within filtered labels\n\nResults are further filtered by the user's magic-link scope."
+        },
+        {
+          "info": {
+            "name": "Docs External Proxy Status",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/docs/external-proxy/_status",
+            "params": [
+              {
+                "name": "page_id",
+                "value": "",
+                "type": "query"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Internal-only drift surface for the docs portal's external-link panel.\n\nReturns the SPN-reachability state of every `sodahealth.sharepoint.com`\nURL referenced on the page. Cached per-page-id for ~7 minutes server-side\nso a frontend that opens/closes the panel repeatedly doesn't pound Graph.\n\nAuth: Entra OIDC ONLY. Magic-link customers get 403 unconditionally — the\nset of file URLs on a page is internal-only information."
+        },
+        {
+          "info": {
+            "name": "Docs External Proxy",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/docs/external-proxy/:token",
+            "params": [
+              {
+                "name": "token",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Customer-facing file proxy. See module docstring for the full envelope.\n\nThe token in the URL path is server-minted at page-render time by\n`_rewrite_external_sp_links` (WI-4). It binds `(page_id, url)` so a\ncustomer can only fetch URLs that appeared in pages they are entitled\nto see."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

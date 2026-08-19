@@ -1,0 +1,36 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Evermore Portal docs Evermore Docs Portal API",
+    "version": "0.1.0"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Evermore Docs Portal",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Spa Catch All",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/:full_path",
+            "params": [
+              {
+                "name": "full_path",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Serve static files or index.html for client-side routes."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

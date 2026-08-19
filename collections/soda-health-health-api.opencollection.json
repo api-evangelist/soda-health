@@ -1,0 +1,51 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Evermore Portal docs health API",
+    "version": "0.1.0"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "health",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Healthz",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/healthz"
+          },
+          "docs": "Liveness probe — returns 200 if the process is alive."
+        },
+        {
+          "info": {
+            "name": "Readyz",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/readyz"
+          },
+          "docs": "Readiness probe — returns 200 if the app is ready to serve traffic."
+        },
+        {
+          "info": {
+            "name": "Health",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/health"
+          },
+          "docs": "Backward-compat alias for /healthz."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

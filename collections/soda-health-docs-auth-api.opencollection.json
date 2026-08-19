@@ -1,0 +1,40 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Evermore Portal docs docs-auth API",
+    "version": "0.1.0"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "docs-auth",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Docs Oidc Login",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/docs/auth/login"
+          },
+          "docs": "Redirect internal users to the Entra OIDC authorize endpoint.\n\nGenerates a signed state token to prevent CSRF, then redirects to Entra's\nauthorize endpoint with the appropriate scopes and redirect URI."
+        },
+        {
+          "info": {
+            "name": "Docs Oidc Callback",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/docs/auth/callback"
+          },
+          "docs": "Handle the Entra OIDC callback after user authenticates.\n\nValidates the state parameter, exchanges the authorization code for tokens,\nvalidates the ID token via JWKS, extracts user claims, and issues a session\nJWT. Redirects the user to the frontend with the session JWT."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

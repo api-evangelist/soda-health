@@ -1,0 +1,180 @@
+{
+  "item": [
+    {
+      "id": "f7ef9deb-38ea-458f-b3d2-df575ee120d9",
+      "name": "docs-auth",
+      "description": {
+        "content": "",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "f5e0c7a1-2f05-4055-84dc-8008fa8050d0",
+          "name": "Docs Oidc Login",
+          "request": {
+            "name": "Docs Oidc Login",
+            "description": {
+              "content": "Redirect internal users to the Entra OIDC authorize endpoint.\n\nGenerates a signed state token to prevent CSRF, then redirects to Entra's\nauthorize endpoint with the appropriate scopes and redirect URI.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "docs",
+                "auth",
+                "login"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "340ef92d-a1e5-4809-8945-2929edd39cbc",
+              "name": "Successful Response",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "docs",
+                    "auth",
+                    "login"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "8354d1f1-6227-4c3d-b36e-66cd6cc94926",
+          "name": "Docs Oidc Callback",
+          "request": {
+            "name": "Docs Oidc Callback",
+            "description": {
+              "content": "Handle the Entra OIDC callback after user authenticates.\n\nValidates the state parameter, exchanges the authorization code for tokens,\nvalidates the ID token via JWKS, extracts user claims, and issues a session\nJWT. Redirects the user to the frontend with the session JWT.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "docs",
+                "auth",
+                "callback"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "c0200e5f-de68-4cf8-abba-dc1584b6a78d",
+              "name": "Successful Response",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "docs",
+                    "auth",
+                    "callback"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "type": "string",
+      "value": "/",
+      "key": "baseUrl"
+    }
+  ],
+  "info": {
+    "_postman_id": "662eb060-3403-4369-b2e6-96921806e142",
+    "name": "Evermore Portal docs docs-auth API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "Customer-facing docs portal with magic link and OIDC auth",
+      "type": "text/plain"
+    }
+  }
+}
