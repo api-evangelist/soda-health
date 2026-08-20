@@ -51,6 +51,8 @@ apis:
   humanURL: https://docs.evermoreoutcomes.com/
   baseURL: https://docs.evermoreoutcomes.com
   tags:
+  - Docs
+  tags_raw:
   - docs
   properties:
   - type: OpenAPI
@@ -87,6 +89,8 @@ apis:
   humanURL: https://docs.evermoreoutcomes.com/
   baseURL: https://docs.evermoreoutcomes.com
   tags:
+  - Health
+  tags_raw:
   - health
   properties:
   - type: OpenAPI
