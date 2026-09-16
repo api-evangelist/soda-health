@@ -1,19 +1,15 @@
 aid: soda-health
 name: Soda Health
-description: >-
-  Soda Health is a healthcare benefits technology company that builds a benefits
-  administration and "health wallet" platform for health plans, powering
-  supplemental benefits for Medicare Advantage and Medicaid members such as
-  over-the-counter (OTC), healthy food and grocery, and other flex/spending-card
-  benefits. The company now operates as Evermore Outcomes — sodahealth.com
-  redirects to evermoreoutcomes.com and the product documentation is branded
-  "Evermore Product Documentation," while account and program references still
-  carry the Soda Health name. The public developer surface found is the Evermore
-  Docs Portal API (docs.evermoreoutcomes.com): a Confluence-backed, customer-facing
-  documentation portal secured with magic-link tokens and OIDC single sign-on,
-  scoped per customer program. The core benefits/wallet product APIs are gated
-  behind that portal and are not publicly published. Soda Health was surfaced as a
-  portfolio company of Lightspeed Venture Partners.
+description: 'Soda Health is a healthcare benefits technology company that builds a benefits administration
+  and "health wallet" platform for health plans, powering supplemental benefits for Medicare Advantage
+  and Medicaid members such as over-the-counter (OTC), healthy food and grocery, and other flex/spending-card
+  benefits. The company now operates as Evermore Outcomes — sodahealth.com redirects to evermoreoutcomes.com
+  and the product documentation is branded "Evermore Product Documentation," while account and program
+  references still carry the Soda Health name. The public developer surface found is the Evermore Docs
+  Portal API (docs.evermoreoutcomes.com): a Confluence-backed, customer-facing documentation portal secured
+  with magic-link tokens and OIDC single sign-on, scoped per customer program. The core benefits/wallet
+  product APIs are gated behind that portal and are not publicly published. Soda Health was surfaced as
+  a portfolio company of Lightspeed Venture Partners.'
 url: https://raw.githubusercontent.com/api-evangelist/soda-health/refs/heads/main/apis.yml
 x-type: company
 x-source: vc-portfolio
@@ -55,7 +51,7 @@ tags:
 - Documentation Portal
 specificationVersion: '0.23'
 created: '2026-07-17'
-modified: '2026-07-21'
+modified: '2026-09-16'
 apis:
 - aid: soda-health:soda-health-docs-api
   name: Soda Health docs API
@@ -96,7 +92,7 @@ apis:
   - type: Authentication
     url: authentication/soda-health-authentication.yml
 - aid: soda-health:soda-health-health-api
-  name: Soda Health health API
+  name: Soda Health API
   description: The health API from Soda Health — 3 operation(s) for health.
   humanURL: https://docs.evermoreoutcomes.com/
   baseURL: https://docs.evermoreoutcomes.com
@@ -133,7 +129,10 @@ common:
   url: data-model/soda-health-data-model.yml
 - type: X-MCPServerCandidate
   url: mcp/soda-health-mcp.yml
-  note: 'Renamed from MCPServer 2026-09-03 (roadmap#247): the manifest self-describes as status: candidate — a tool list derived from the published API contracts, not an existing server. The scorer already read the manifest and reported mcp_server correctly; the MCPServer type was crediting the artifact-type surfaces with a server that does not exist.'
+  note: 'Renamed from MCPServer 2026-09-03 (roadmap#247): the manifest self-describes as status: candidate
+    — a tool list derived from the published API contracts, not an existing server. The scorer already
+    read the manifest and reported mcp_server correctly; the MCPServer type was crediting the artifact-type
+    surfaces with a server that does not exist.'
 - type: Conformance
   url: conformance/soda-health-conformance.yml
 - type: Lifecycle
