@@ -1,15 +1,15 @@
-openapi: 3.1.0
+openapi: 3.2.0
 info:
-  title: Evermore Portal docs API
+  title: Evermore Portal Docs API
   description: Customer-facing docs portal with magic link and OIDC auth
   version: 0.1.0
 tags:
-- name: docs
+- name: Docs
 paths:
   /api/docs/login:
     post:
       tags:
-      - docs
+      - Docs
       summary: Docs Login
       description: 'Retired endpoint — domain-based login is no longer supported.
 
@@ -31,7 +31,7 @@ paths:
   /api/docs/magic-link:
     post:
       tags:
-      - docs
+      - Docs
       summary: Docs Magic Link
       description: 'Generate a magic link for a customer. Internal users only (ADR-71391314).
 
@@ -75,7 +75,7 @@ paths:
   /api/docs/verify:
     post:
       tags:
-      - docs
+      - Docs
       summary: Docs Verify
       description: 'Verify a magic link token and return a session JWT (ADR-71391314).
 
@@ -127,7 +127,7 @@ paths:
   /api/docs/folders:
     get:
       tags:
-      - docs
+      - Docs
       summary: Docs Folders
       description: 'Return the live Confluence folder list. Internal Entra users only.
 
@@ -155,7 +155,7 @@ paths:
   /api/docs/inventory:
     get:
       tags:
-      - docs
+      - Docs
       summary: Docs Inventory
       description: 'Return the document inventory filtered by the user''s magic-link scope.
 
@@ -178,7 +178,7 @@ paths:
   /api/docs/pages/{page_id}:
     get:
       tags:
-      - docs
+      - Docs
       summary: Docs Page
       description: 'Return a single document page with content.
 
@@ -216,7 +216,7 @@ paths:
   /api/docs/images/{page_id}/{filename}:
     get:
       tags:
-      - docs
+      - Docs
       summary: Docs Image
       description: 'Return an image attachment for a docs page.
 
@@ -259,7 +259,7 @@ paths:
   /api/docs/search:
     get:
       tags:
-      - docs
+      - Docs
       summary: Docs Search
       description: 'Search documents by keyword (title + body) and/or tag filter.
 
@@ -310,7 +310,7 @@ paths:
   /api/docs/external-proxy/_status:
     get:
       tags:
-      - docs
+      - Docs
       summary: Docs External Proxy Status
       description: 'Internal-only drift surface for the docs portal''s external-link panel.
 
@@ -351,7 +351,7 @@ paths:
   /api/docs/external-proxy/{token}:
     get:
       tags:
-      - docs
+      - Docs
       summary: Docs External Proxy
       description: 'Customer-facing file proxy. See module docstring for the full envelope.
 
@@ -387,67 +387,37 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
-    ExternalProxyStatusItem:
+    MagicLinkResponse:
       properties:
-        url:
+        magic_link_url:
           type: string
-          title: Url
-        resolves:
-          type: boolean
-          title: Resolves
-        error:
+          title: Magic Link Url
+        customer_name:
+          type: string
+          title: Customer Name
+        scope:
+          type: string
+          title: Scope
+        folder_id:
           anyOf:
           - type: string
           - type: 'null'
-          title: Error
-      type: object
-      required:
-      - url
-      - resolves
-      title: ExternalProxyStatusItem
-    FolderItem:
-      properties:
-        folder_id:
-          type: string
           title: Folder Id
-        label:
-          type: string
-          title: Label
-        doc_count:
+        page_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Page Id
+        expires_in_minutes:
           type: integer
-          title: Doc Count
+          title: Expires In Minutes
+          default: 43200
       type: object
       required:
-      - folder_id
-      - label
-      - doc_count
-      title: FolderItem
-    ValidationError:
-      properties:
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
-      type: object
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
+      - magic_link_url
+      - customer_name
+      - scope
+      title: MagicLinkResponse
     VerifyResponse:
       properties:
         token:
@@ -479,63 +449,6 @@ components:
           default: false
       type: object
       title: VerifyResponse
-    InventoryResponse:
-      properties:
-        pages:
-          items:
-            $ref: '#/components/schemas/InventoryPage'
-          type: array
-          title: Pages
-      type: object
-      required:
-      - pages
-      title: InventoryResponse
-    PageResponse:
-      properties:
-        id:
-          type: string
-          title: Id
-        title:
-          type: string
-          title: Title
-        labels:
-          items:
-            type: string
-          type: array
-          title: Labels
-        content:
-          type: string
-          title: Content
-        last_updated:
-          type: string
-          title: Last Updated
-          default: ''
-      type: object
-      required:
-      - id
-      - title
-      - labels
-      - content
-      title: PageResponse
-    ExternalProxyStatusResponse:
-      properties:
-        page_id:
-          type: string
-          title: Page Id
-        items:
-          items:
-            $ref: '#/components/schemas/ExternalProxyStatusItem'
-          type: array
-          title: Items
-        cached:
-          type: boolean
-          title: Cached
-          default: false
-      type: object
-      required:
-      - page_id
-      - items
-      title: ExternalProxyStatusResponse
     FoldersResponse:
       properties:
         folders:
@@ -547,6 +460,35 @@ components:
       required:
       - folders
       title: FoldersResponse
+    ExternalProxyStatusItem:
+      properties:
+        url:
+          type: string
+          title: Url
+        resolves:
+          type: boolean
+          title: Resolves
+        error:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Error
+      type: object
+      required:
+      - url
+      - resolves
+      title: ExternalProxyStatusItem
+    InventoryResponse:
+      properties:
+        pages:
+          items:
+            $ref: '#/components/schemas/InventoryPage'
+          type: array
+          title: Pages
+      type: object
+      required:
+      - pages
+      title: InventoryResponse
     MagicLinkRequest:
       properties:
         customer_name:
@@ -606,6 +548,59 @@ components:
       required:
       - token
       title: VerifyRequest
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    PageResponse:
+      properties:
+        id:
+          type: string
+          title: Id
+        title:
+          type: string
+          title: Title
+        labels:
+          items:
+            type: string
+          type: array
+          title: Labels
+        content:
+          type: string
+          title: Content
+        last_updated:
+          type: string
+          title: Last Updated
+          default: ''
+      type: object
+      required:
+      - id
+      - title
+      - labels
+      - content
+      title: PageResponse
     InventoryPage:
       properties:
         id:
@@ -629,37 +624,42 @@ components:
       - title
       - labels
       title: InventoryPage
-    MagicLinkResponse:
+    FolderItem:
       properties:
-        magic_link_url:
-          type: string
-          title: Magic Link Url
-        customer_name:
-          type: string
-          title: Customer Name
-        scope:
-          type: string
-          title: Scope
         folder_id:
-          anyOf:
-          - type: string
-          - type: 'null'
+          type: string
           title: Folder Id
-        page_id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Page Id
-        expires_in_minutes:
+        label:
+          type: string
+          title: Label
+        doc_count:
           type: integer
-          title: Expires In Minutes
-          default: 43200
+          title: Doc Count
       type: object
       required:
-      - magic_link_url
-      - customer_name
-      - scope
-      title: MagicLinkResponse
+      - folder_id
+      - label
+      - doc_count
+      title: FolderItem
+    ExternalProxyStatusResponse:
+      properties:
+        page_id:
+          type: string
+          title: Page Id
+        items:
+          items:
+            $ref: '#/components/schemas/ExternalProxyStatusItem'
+          type: array
+          title: Items
+        cached:
+          type: boolean
+          title: Cached
+          default: false
+      type: object
+      required:
+      - page_id
+      - items
+      title: ExternalProxyStatusResponse
   securitySchemes:
     HTTPBearer:
       type: http

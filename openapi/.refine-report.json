@@ -1,20 +1,31 @@
 {
   "provider": "soda-health",
   "sources": [
-    "soda-health-docs-api-openapi.yml",
-    "soda-health-docs-auth-api-openapi.yml",
-    "soda-health-evermore-docs-portal-api-openapi.yml",
-    "soda-health-health-api-openapi.yml"
+    "_original/soda-health-docs-portal-openapi-original.json"
   ],
   "outputs": [
+    "soda-health-evermore-docs-portal-api-openapi.yml",
     "soda-health-docs-api-openapi.yml",
     "soda-health-docs-auth-api-openapi.yml",
-    "soda-health-evermore-docs-portal-api-openapi.yml",
     "soda-health-health-api-openapi.yml"
   ],
   "archived": [],
   "errors": [],
   "warnings": [],
-  "notes": [],
-  "skipped": []
+  "notes": [
+    "sourced from openapi/_original/ (1 archived document(s)); previously refined output at the top level was skipped rather than re-split",
+    "soda-health-docs-portal-openapi-original.json: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
+    "soda-health-docs-portal-openapi-original.json: tagged paths GET /{full_path} -> Evermore Docs Portal",
+    "soda-health-docs-portal-openapi-original.json: declared missing tag: Evermore Docs Portal",
+    "soda-health-docs-portal-openapi-original.json: declared missing tag: docs",
+    "soda-health-docs-portal-openapi-original.json: declared missing tag: docs-auth",
+    "soda-health-docs-portal-openapi-original.json: declared missing tag: health",
+    "apis.yml register: already-registered"
+  ],
+  "skipped": [
+    "soda-health-docs-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "soda-health-docs-auth-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "soda-health-evermore-docs-portal-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "soda-health-health-api-openapi.yml: previously refined output, superseded by openapi/_original/"
+  ]
 }
