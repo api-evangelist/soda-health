@@ -54,7 +54,7 @@ created: '2026-07-17'
 modified: '2026-09-16'
 apis:
 - aid: soda-health:soda-health-docs-api
-  name: Soda Health docs API
+  name: Soda Health Docs API
   description: The docs API from Soda Health — 10 operation(s) for docs.
   humanURL: https://docs.evermoreoutcomes.com/
   baseURL: https://docs.evermoreoutcomes.com
@@ -68,7 +68,7 @@ apis:
   - type: Authentication
     url: authentication/soda-health-authentication.yml
 - aid: soda-health:soda-health-docs-auth-api
-  name: Soda Health docs-auth API
+  name: Soda Health Docs Auth API
   description: The docs-auth API from Soda Health — 2 operation(s) for docs-auth.
   humanURL: https://docs.evermoreoutcomes.com/
   baseURL: https://docs.evermoreoutcomes.com

@@ -387,37 +387,47 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
-    MagicLinkResponse:
+    ExternalProxyStatusItem:
       properties:
-        magic_link_url:
+        url:
           type: string
-          title: Magic Link Url
-        customer_name:
-          type: string
-          title: Customer Name
-        scope:
-          type: string
-          title: Scope
-        folder_id:
+          title: Url
+        resolves:
+          type: boolean
+          title: Resolves
+        error:
           anyOf:
           - type: string
           - type: 'null'
-          title: Folder Id
-        page_id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Page Id
-        expires_in_minutes:
-          type: integer
-          title: Expires In Minutes
-          default: 43200
+          title: Error
       type: object
       required:
-      - magic_link_url
-      - customer_name
-      - scope
-      title: MagicLinkResponse
+      - url
+      - resolves
+      title: ExternalProxyStatusItem
+    InventoryPage:
+      properties:
+        id:
+          type: string
+          title: Id
+        title:
+          type: string
+          title: Title
+        labels:
+          items:
+            type: string
+          type: array
+          title: Labels
+        last_updated:
+          type: string
+          title: Last Updated
+          default: ''
+      type: object
+      required:
+      - id
+      - title
+      - labels
+      title: InventoryPage
     VerifyResponse:
       properties:
         token:
@@ -449,46 +459,6 @@ components:
           default: false
       type: object
       title: VerifyResponse
-    FoldersResponse:
-      properties:
-        folders:
-          items:
-            $ref: '#/components/schemas/FolderItem'
-          type: array
-          title: Folders
-      type: object
-      required:
-      - folders
-      title: FoldersResponse
-    ExternalProxyStatusItem:
-      properties:
-        url:
-          type: string
-          title: Url
-        resolves:
-          type: boolean
-          title: Resolves
-        error:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Error
-      type: object
-      required:
-      - url
-      - resolves
-      title: ExternalProxyStatusItem
-    InventoryResponse:
-      properties:
-        pages:
-          items:
-            $ref: '#/components/schemas/InventoryPage'
-          type: array
-          title: Pages
-      type: object
-      required:
-      - pages
-      title: InventoryResponse
     MagicLinkRequest:
       properties:
         customer_name:
@@ -529,15 +499,17 @@ components:
         have been removed. ``scope`` must be one of: all, folder, page.
 
         ``folder_id`` is required when scope=folder; ``page_id`` when scope=page.'
-    HTTPValidationError:
+    InventoryResponse:
       properties:
-        detail:
+        pages:
           items:
-            $ref: '#/components/schemas/ValidationError'
+            $ref: '#/components/schemas/InventoryPage'
           type: array
-          title: Detail
+          title: Pages
       type: object
-      title: HTTPValidationError
+      required:
+      - pages
+      title: InventoryResponse
     VerifyRequest:
       properties:
         token:
@@ -548,32 +520,42 @@ components:
       required:
       - token
       title: VerifyRequest
-    ValidationError:
+    ExternalProxyStatusResponse:
       properties:
-        loc:
+        page_id:
+          type: string
+          title: Page Id
+        items:
           items:
-            anyOf:
-            - type: string
-            - type: integer
+            $ref: '#/components/schemas/ExternalProxyStatusItem'
           type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
+          title: Items
+        cached:
+          type: boolean
+          title: Cached
+          default: false
       type: object
       required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
+      - page_id
+      - items
+      title: ExternalProxyStatusResponse
+    FolderItem:
+      properties:
+        folder_id:
+          type: string
+          title: Folder Id
+        label:
+          type: string
+          title: Label
+        doc_count:
+          type: integer
+          title: Doc Count
+      type: object
+      required:
+      - folder_id
+      - label
+      - doc_count
+      title: FolderItem
     PageResponse:
       properties:
         id:
@@ -601,65 +583,83 @@ components:
       - labels
       - content
       title: PageResponse
-    InventoryPage:
+    FoldersResponse:
       properties:
-        id:
-          type: string
-          title: Id
-        title:
-          type: string
-          title: Title
-        labels:
+        folders:
           items:
-            type: string
+            $ref: '#/components/schemas/FolderItem'
           type: array
-          title: Labels
-        last_updated:
-          type: string
-          title: Last Updated
-          default: ''
+          title: Folders
       type: object
       required:
-      - id
-      - title
-      - labels
-      title: InventoryPage
-    FolderItem:
+      - folders
+      title: FoldersResponse
+    MagicLinkResponse:
       properties:
+        magic_link_url:
+          type: string
+          title: Magic Link Url
+        customer_name:
+          type: string
+          title: Customer Name
+        scope:
+          type: string
+          title: Scope
         folder_id:
-          type: string
+          anyOf:
+          - type: string
+          - type: 'null'
           title: Folder Id
-        label:
-          type: string
-          title: Label
-        doc_count:
-          type: integer
-          title: Doc Count
-      type: object
-      required:
-      - folder_id
-      - label
-      - doc_count
-      title: FolderItem
-    ExternalProxyStatusResponse:
-      properties:
         page_id:
-          type: string
+          anyOf:
+          - type: string
+          - type: 'null'
           title: Page Id
-        items:
-          items:
-            $ref: '#/components/schemas/ExternalProxyStatusItem'
-          type: array
-          title: Items
-        cached:
-          type: boolean
-          title: Cached
-          default: false
+        expires_in_minutes:
+          type: integer
+          title: Expires In Minutes
+          default: 43200
       type: object
       required:
-      - page_id
-      - items
-      title: ExternalProxyStatusResponse
+      - magic_link_url
+      - customer_name
+      - scope
+      title: MagicLinkResponse
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
   securitySchemes:
     HTTPBearer:
       type: http
