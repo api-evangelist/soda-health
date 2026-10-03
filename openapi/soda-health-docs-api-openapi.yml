@@ -387,118 +387,6 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
-    ExternalProxyStatusItem:
-      properties:
-        url:
-          type: string
-          title: Url
-        resolves:
-          type: boolean
-          title: Resolves
-        error:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Error
-      type: object
-      required:
-      - url
-      - resolves
-      title: ExternalProxyStatusItem
-    InventoryPage:
-      properties:
-        id:
-          type: string
-          title: Id
-        title:
-          type: string
-          title: Title
-        labels:
-          items:
-            type: string
-          type: array
-          title: Labels
-        last_updated:
-          type: string
-          title: Last Updated
-          default: ''
-      type: object
-      required:
-      - id
-      - title
-      - labels
-      title: InventoryPage
-    VerifyResponse:
-      properties:
-        token:
-          type: string
-          title: Token
-          default: ''
-        customer_name:
-          type: string
-          title: Customer Name
-          default: ''
-        scope:
-          type: string
-          title: Scope
-          default: all
-        folder_id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Folder Id
-        page_id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Page Id
-        preserve_internal_session:
-          type: boolean
-          title: Preserve Internal Session
-          description: True when the caller already has a valid internal session JWT and the magic link is being used for navigation only. Frontend should skip writing localStorage and keep the existing internal session.
-          default: false
-      type: object
-      title: VerifyResponse
-    MagicLinkRequest:
-      properties:
-        customer_name:
-          type: string
-          title: Customer Name
-          description: Customer display name to embed in the token
-        scope:
-          type: string
-          title: Scope
-          description: 'Access scope: ''all'', ''folder'', or ''page'''
-          default: all
-        folder_id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Folder Id
-          description: Confluence label for folder scope. Required when scope='folder'.
-        page_id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Page Id
-          description: Confluence page ID for page scope. Required when scope='page'.
-        expires_in_minutes:
-          type: integer
-          title: Expires In Minutes
-          description: 'Link expiry in minutes. Presets: 43200 (30d), 129600 (90d), 5256000 (10y — effectively never). Custom values accepted between 1 min and 5256000 min (10 years); out-of-range values clamp to the 30-day default.'
-          default: 43200
-      type: object
-      required:
-      - customer_name
-      title: MagicLinkRequest
-      description: 'Request body for IM-issued magic link generation (ADR-71391314).
-
-
-        Scope is carried explicitly on the token. ``email`` and ``client_types``
-
-        have been removed. ``scope`` must be one of: all, folder, page.
-
-        ``folder_id`` is required when scope=folder; ``page_id`` when scope=page.'
     InventoryResponse:
       properties:
         pages:
@@ -539,6 +427,46 @@ components:
       - page_id
       - items
       title: ExternalProxyStatusResponse
+    MagicLinkRequest:
+      properties:
+        customer_name:
+          type: string
+          title: Customer Name
+          description: Customer display name to embed in the token
+        scope:
+          type: string
+          title: Scope
+          description: 'Access scope: ''all'', ''folder'', or ''page'''
+          default: all
+        folder_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Folder Id
+          description: Confluence label for folder scope. Required when scope='folder'.
+        page_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Page Id
+          description: Confluence page ID for page scope. Required when scope='page'.
+        expires_in_minutes:
+          type: integer
+          title: Expires In Minutes
+          description: 'Link expiry in minutes. Presets: 43200 (30d), 129600 (90d), 5256000 (10y — effectively never). Custom values accepted between 1 min and 5256000 min (10 years); out-of-range values clamp to the 30-day default.'
+          default: 43200
+      type: object
+      required:
+      - customer_name
+      title: MagicLinkRequest
+      description: 'Request body for IM-issued magic link generation (ADR-71391314).
+
+
+        Scope is carried explicitly on the token. ``email`` and ``client_types``
+
+        have been removed. ``scope`` must be one of: all, folder, page.
+
+        ``folder_id`` is required when scope=folder; ``page_id`` when scope=page.'
     FolderItem:
       properties:
         folder_id:
@@ -556,44 +484,46 @@ components:
       - label
       - doc_count
       title: FolderItem
-    PageResponse:
+    VerifyResponse:
       properties:
-        id:
+        token:
           type: string
-          title: Id
-        title:
-          type: string
-          title: Title
-        labels:
-          items:
-            type: string
-          type: array
-          title: Labels
-        content:
-          type: string
-          title: Content
-        last_updated:
-          type: string
-          title: Last Updated
+          title: Token
           default: ''
+        customer_name:
+          type: string
+          title: Customer Name
+          default: ''
+        scope:
+          type: string
+          title: Scope
+          default: all
+        folder_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Folder Id
+        page_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Page Id
+        preserve_internal_session:
+          type: boolean
+          title: Preserve Internal Session
+          description: True when the caller already has a valid internal session JWT and the magic link is being used for navigation only. Frontend should skip writing localStorage and keep the existing internal session.
+          default: false
       type: object
-      required:
-      - id
-      - title
-      - labels
-      - content
-      title: PageResponse
-    FoldersResponse:
+      title: VerifyResponse
+    HTTPValidationError:
       properties:
-        folders:
+        detail:
           items:
-            $ref: '#/components/schemas/FolderItem'
+            $ref: '#/components/schemas/ValidationError'
           type: array
-          title: Folders
+          title: Detail
       type: object
-      required:
-      - folders
-      title: FoldersResponse
+      title: HTTPValidationError
     MagicLinkResponse:
       properties:
         magic_link_url:
@@ -625,15 +555,67 @@ components:
       - customer_name
       - scope
       title: MagicLinkResponse
-    HTTPValidationError:
+    InventoryPage:
       properties:
-        detail:
+        id:
+          type: string
+          title: Id
+        title:
+          type: string
+          title: Title
+        labels:
           items:
-            $ref: '#/components/schemas/ValidationError'
+            type: string
           type: array
-          title: Detail
+          title: Labels
+        last_updated:
+          type: string
+          title: Last Updated
+          default: ''
       type: object
-      title: HTTPValidationError
+      required:
+      - id
+      - title
+      - labels
+      title: InventoryPage
+    FoldersResponse:
+      properties:
+        folders:
+          items:
+            $ref: '#/components/schemas/FolderItem'
+          type: array
+          title: Folders
+      type: object
+      required:
+      - folders
+      title: FoldersResponse
+    PageResponse:
+      properties:
+        id:
+          type: string
+          title: Id
+        title:
+          type: string
+          title: Title
+        labels:
+          items:
+            type: string
+          type: array
+          title: Labels
+        content:
+          type: string
+          title: Content
+        last_updated:
+          type: string
+          title: Last Updated
+          default: ''
+      type: object
+      required:
+      - id
+      - title
+      - labels
+      - content
+      title: PageResponse
     ValidationError:
       properties:
         loc:
@@ -660,6 +642,24 @@ components:
       - msg
       - type
       title: ValidationError
+    ExternalProxyStatusItem:
+      properties:
+        url:
+          type: string
+          title: Url
+        resolves:
+          type: boolean
+          title: Resolves
+        error:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Error
+      type: object
+      required:
+      - url
+      - resolves
+      title: ExternalProxyStatusItem
   securitySchemes:
     HTTPBearer:
       type: http
