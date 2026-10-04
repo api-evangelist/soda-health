@@ -387,6 +387,24 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
+    ExternalProxyStatusItem:
+      properties:
+        url:
+          type: string
+          title: Url
+        resolves:
+          type: boolean
+          title: Resolves
+        error:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Error
+      type: object
+      required:
+      - url
+      - resolves
+      title: ExternalProxyStatusItem
     InventoryResponse:
       properties:
         pages:
@@ -398,35 +416,46 @@ components:
       required:
       - pages
       title: InventoryResponse
-    VerifyRequest:
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    VerifyResponse:
       properties:
         token:
           type: string
           title: Token
-          description: Magic link token to verify
-      type: object
-      required:
-      - token
-      title: VerifyRequest
-    ExternalProxyStatusResponse:
-      properties:
-        page_id:
+          default: ''
+        customer_name:
           type: string
+          title: Customer Name
+          default: ''
+        scope:
+          type: string
+          title: Scope
+          default: all
+        folder_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Folder Id
+        page_id:
+          anyOf:
+          - type: string
+          - type: 'null'
           title: Page Id
-        items:
-          items:
-            $ref: '#/components/schemas/ExternalProxyStatusItem'
-          type: array
-          title: Items
-        cached:
+        preserve_internal_session:
           type: boolean
-          title: Cached
+          title: Preserve Internal Session
+          description: True when the caller already has a valid internal session JWT and the magic link is being used for navigation only. Frontend should skip writing localStorage and keep the existing internal session.
           default: false
       type: object
-      required:
-      - page_id
-      - items
-      title: ExternalProxyStatusResponse
+      title: VerifyResponse
     MagicLinkRequest:
       properties:
         customer_name:
@@ -467,63 +496,29 @@ components:
         have been removed. ``scope`` must be one of: all, folder, page.
 
         ``folder_id`` is required when scope=folder; ``page_id`` when scope=page.'
-    FolderItem:
+    InventoryPage:
       properties:
-        folder_id:
+        id:
           type: string
-          title: Folder Id
-        label:
+          title: Id
+        title:
           type: string
-          title: Label
-        doc_count:
-          type: integer
-          title: Doc Count
+          title: Title
+        labels:
+          items:
+            type: string
+          type: array
+          title: Labels
+        last_updated:
+          type: string
+          title: Last Updated
+          default: ''
       type: object
       required:
-      - folder_id
-      - label
-      - doc_count
-      title: FolderItem
-    VerifyResponse:
-      properties:
-        token:
-          type: string
-          title: Token
-          default: ''
-        customer_name:
-          type: string
-          title: Customer Name
-          default: ''
-        scope:
-          type: string
-          title: Scope
-          default: all
-        folder_id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Folder Id
-        page_id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Page Id
-        preserve_internal_session:
-          type: boolean
-          title: Preserve Internal Session
-          description: True when the caller already has a valid internal session JWT and the magic link is being used for navigation only. Frontend should skip writing localStorage and keep the existing internal session.
-          default: false
-      type: object
-      title: VerifyResponse
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
+      - id
+      - title
+      - labels
+      title: InventoryPage
     MagicLinkResponse:
       properties:
         magic_link_url:
@@ -555,40 +550,68 @@ components:
       - customer_name
       - scope
       title: MagicLinkResponse
-    InventoryPage:
+    ExternalProxyStatusResponse:
       properties:
-        id:
+        page_id:
           type: string
-          title: Id
-        title:
-          type: string
-          title: Title
-        labels:
+          title: Page Id
+        items:
           items:
-            type: string
+            $ref: '#/components/schemas/ExternalProxyStatusItem'
           type: array
-          title: Labels
-        last_updated:
-          type: string
-          title: Last Updated
-          default: ''
+          title: Items
+        cached:
+          type: boolean
+          title: Cached
+          default: false
       type: object
       required:
-      - id
-      - title
-      - labels
-      title: InventoryPage
-    FoldersResponse:
+      - page_id
+      - items
+      title: ExternalProxyStatusResponse
+    FolderItem:
       properties:
-        folders:
-          items:
-            $ref: '#/components/schemas/FolderItem'
-          type: array
-          title: Folders
+        folder_id:
+          type: string
+          title: Folder Id
+        label:
+          type: string
+          title: Label
+        doc_count:
+          type: integer
+          title: Doc Count
       type: object
       required:
-      - folders
-      title: FoldersResponse
+      - folder_id
+      - label
+      - doc_count
+      title: FolderItem
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
     PageResponse:
       properties:
         id:
@@ -616,50 +639,27 @@ components:
       - labels
       - content
       title: PageResponse
-    ValidationError:
+    VerifyRequest:
       properties:
-        loc:
+        token:
+          type: string
+          title: Token
+          description: Magic link token to verify
+      type: object
+      required:
+      - token
+      title: VerifyRequest
+    FoldersResponse:
+      properties:
+        folders:
           items:
-            anyOf:
-            - type: string
-            - type: integer
+            $ref: '#/components/schemas/FolderItem'
           type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
+          title: Folders
       type: object
       required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
-    ExternalProxyStatusItem:
-      properties:
-        url:
-          type: string
-          title: Url
-        resolves:
-          type: boolean
-          title: Resolves
-        error:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Error
-      type: object
-      required:
-      - url
-      - resolves
-      title: ExternalProxyStatusItem
+      - folders
+      title: FoldersResponse
   securitySchemes:
     HTTPBearer:
       type: http
