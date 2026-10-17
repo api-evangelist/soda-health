@@ -387,35 +387,33 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
-    ExternalProxyStatusItem:
+    PageResponse:
       properties:
-        url:
+        id:
           type: string
-          title: Url
-        resolves:
-          type: boolean
-          title: Resolves
-        error:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Error
-      type: object
-      required:
-      - url
-      - resolves
-      title: ExternalProxyStatusItem
-    InventoryResponse:
-      properties:
-        pages:
+          title: Id
+        title:
+          type: string
+          title: Title
+        labels:
           items:
-            $ref: '#/components/schemas/InventoryPage'
+            type: string
           type: array
-          title: Pages
+          title: Labels
+        content:
+          type: string
+          title: Content
+        last_updated:
+          type: string
+          title: Last Updated
+          default: ''
       type: object
       required:
-      - pages
-      title: InventoryResponse
+      - id
+      - title
+      - labels
+      - content
+      title: PageResponse
     HTTPValidationError:
       properties:
         detail:
@@ -425,37 +423,6 @@ components:
           title: Detail
       type: object
       title: HTTPValidationError
-    VerifyResponse:
-      properties:
-        token:
-          type: string
-          title: Token
-          default: ''
-        customer_name:
-          type: string
-          title: Customer Name
-          default: ''
-        scope:
-          type: string
-          title: Scope
-          default: all
-        folder_id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Folder Id
-        page_id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Page Id
-        preserve_internal_session:
-          type: boolean
-          title: Preserve Internal Session
-          description: True when the caller already has a valid internal session JWT and the magic link is being used for navigation only. Frontend should skip writing localStorage and keep the existing internal session.
-          default: false
-      type: object
-      title: VerifyResponse
     MagicLinkRequest:
       properties:
         customer_name:
@@ -496,6 +463,35 @@ components:
         have been removed. ``scope`` must be one of: all, folder, page.
 
         ``folder_id`` is required when scope=folder; ``page_id`` when scope=page.'
+    InventoryResponse:
+      properties:
+        pages:
+          items:
+            $ref: '#/components/schemas/InventoryPage'
+          type: array
+          title: Pages
+      type: object
+      required:
+      - pages
+      title: InventoryResponse
+    ExternalProxyStatusItem:
+      properties:
+        url:
+          type: string
+          title: Url
+        resolves:
+          type: boolean
+          title: Resolves
+        error:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Error
+      type: object
+      required:
+      - url
+      - resolves
+      title: ExternalProxyStatusItem
     InventoryPage:
       properties:
         id:
@@ -519,6 +515,17 @@ components:
       - title
       - labels
       title: InventoryPage
+    FoldersResponse:
+      properties:
+        folders:
+          items:
+            $ref: '#/components/schemas/FolderItem'
+          type: array
+          title: Folders
+      type: object
+      required:
+      - folders
+      title: FoldersResponse
     MagicLinkResponse:
       properties:
         magic_link_url:
@@ -550,6 +557,64 @@ components:
       - customer_name
       - scope
       title: MagicLinkResponse
+    VerifyResponse:
+      properties:
+        token:
+          type: string
+          title: Token
+          default: ''
+        customer_name:
+          type: string
+          title: Customer Name
+          default: ''
+        scope:
+          type: string
+          title: Scope
+          default: all
+        folder_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Folder Id
+        page_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Page Id
+        preserve_internal_session:
+          type: boolean
+          title: Preserve Internal Session
+          description: True when the caller already has a valid internal session JWT and the magic link is being used for navigation only. Frontend should skip writing localStorage and keep the existing internal session.
+          default: false
+      type: object
+      title: VerifyResponse
+    FolderItem:
+      properties:
+        folder_id:
+          type: string
+          title: Folder Id
+        label:
+          type: string
+          title: Label
+        doc_count:
+          type: integer
+          title: Doc Count
+      type: object
+      required:
+      - folder_id
+      - label
+      - doc_count
+      title: FolderItem
+    VerifyRequest:
+      properties:
+        token:
+          type: string
+          title: Token
+          description: Magic link token to verify
+      type: object
+      required:
+      - token
+      title: VerifyRequest
     ExternalProxyStatusResponse:
       properties:
         page_id:
@@ -569,23 +634,6 @@ components:
       - page_id
       - items
       title: ExternalProxyStatusResponse
-    FolderItem:
-      properties:
-        folder_id:
-          type: string
-          title: Folder Id
-        label:
-          type: string
-          title: Label
-        doc_count:
-          type: integer
-          title: Doc Count
-      type: object
-      required:
-      - folder_id
-      - label
-      - doc_count
-      title: FolderItem
     ValidationError:
       properties:
         loc:
@@ -612,54 +660,6 @@ components:
       - msg
       - type
       title: ValidationError
-    PageResponse:
-      properties:
-        id:
-          type: string
-          title: Id
-        title:
-          type: string
-          title: Title
-        labels:
-          items:
-            type: string
-          type: array
-          title: Labels
-        content:
-          type: string
-          title: Content
-        last_updated:
-          type: string
-          title: Last Updated
-          default: ''
-      type: object
-      required:
-      - id
-      - title
-      - labels
-      - content
-      title: PageResponse
-    VerifyRequest:
-      properties:
-        token:
-          type: string
-          title: Token
-          description: Magic link token to verify
-      type: object
-      required:
-      - token
-      title: VerifyRequest
-    FoldersResponse:
-      properties:
-        folders:
-          items:
-            $ref: '#/components/schemas/FolderItem'
-          type: array
-          title: Folders
-      type: object
-      required:
-      - folders
-      title: FoldersResponse
   securitySchemes:
     HTTPBearer:
       type: http
